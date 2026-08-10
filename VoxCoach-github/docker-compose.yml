@@ -1,0 +1,29 @@
+services:
+  backend:
+    build: ./Backend/voxcoach
+    ports:
+      - "8000:8000"
+    env_file:
+      - ./Backend/voxcoach/.env
+    volumes:
+      - uploads:/app/uploads
+      - db-data:/app/data
+      - ./Backend/voxcoach/app/firebase-service-account.json:/app/firebase-service-account.json:ro
+      - ./Backend/voxcoach/temp:/tmp/voxcoach
+    environment:
+      - GOOGLE_APPLICATION_CREDENTIALS=/app/firebase-service-account.json
+      - TEMP_DIR=/tmp/voxcoach   # <-- backend can use this path
+    restart: unless-stopped
+
+  frontend:
+    build: ./Frontend
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+volumes:
+  uploads:
+  db-data:
+  temp:
